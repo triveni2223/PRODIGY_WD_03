@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe with scores</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(120deg, #ec7063,#f1948a);
+      color: white;
+      overflow: hidden;
+    }
+    h1{
+        font-family: cursive;
+    }
+
+    .container {
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      margin: 20px auto;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: white;
+      color: #333;
+      font-size: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 10px;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, background-color 0.2s;
+    }
+
+    .cell:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 1.3em;
+      font-weight: bold;
+      min-height: 1.5em;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color:black;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #e0e0e0;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TIC-TAC-TOE</h1>
+    <div class="scoreboard">
+      <div>PLAYER X: <span id="scoreX">0</span></div>
+      <div>PLAYER O: <span id="scoreO">0</span></div>
+    </div>
+    <div id="board" class="board"></div>
+    <p id="status" class="status">PlAYER X's turn</p>
+    <button onclick="restartGame()"><b>Restart Game</b></button>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+    const scoreXDisplay = document.getElementById('scoreX');
+    const scoreODisplay = document.getElementById('scoreO');
+
+    let currentPlayer = 'X';
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+    let scoreX = 0;
+    let scoreO = 0;
+
+    function createBoard() {
+      board.innerHTML = '';
+      gameBoard.forEach((cell, index) => {
+        const div = document.createElement('div');
+        div.classList.add('cell');
+        div.dataset.index = index;
+        div.innerText = cell;
+        div.addEventListener('click', handleMove);
+        board.appendChild(div);
+      });
+    }
+
+    function handleMove(e) {
+      const index = e.target.dataset.index;
+
+      if (gameBoard[index] !== '' || !gameActive) return;
+
+      gameBoard[index] = currentPlayer;
+      e.target.innerText = currentPlayer;
+
+      if (checkWinner()) {
+        status.innerText = '🎉 PLAYER ${currentPlayer} wins!';
+        updateScore(currentPlayer);
+        gameActive = false;
+        return;
+      }
+
+      if (!gameBoard.includes('')) {
+        status.innerText = "🤝 It's a draw!";
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      status.innerText =' PLAYER ${currentPlayer}s turn';
+    }
+
+    function checkWinner() {
+      const winCombos = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+        [0, 4, 8], [2, 4, 6]
+      ];
+
+      return winCombos.some(combo => {
+        const [a, b, c] = combo;
+        return gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[b] === gameBoard[c];
+      });
+    }
+
+    function updateScore(player) {
+      if (player === 'X') {
+        scoreX++;
+        scoreXDisplay.innerText = scoreX;
+      } else {
+        scoreO++;
+        scoreODisplay.innerText = scoreO;
+      }
+    }
+
+    function restartGame() {
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      gameActive = true;
+      currentPlayer = 'X';
+      status.innerText =' PLAYER ${currentPlayer}s turn';
+      createBoard();
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
